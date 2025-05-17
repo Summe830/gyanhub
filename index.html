@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ज्ञान हब</title>
+    <style>
+        /* CSS Variables for Themes */
+        :root {
+            --bg-color: #e0f2f7; /* Light blue background */
+            --text-color: #333;
+            --header-bg: #0077b6; /* Darker blue header */
+            --header-border: #023e8a; /* Dark blue border */
+            --sidebar-bg: #023e8a; /* Dark blue sidebar */
+            --sidebar-link-hover: #0077b6; /* Highlight on hover */
+            --main-content-bg: #fff;
+            --main-content-shadow: rgba(0, 0, 0, 0.1);
+            --heading-color: #0077b6;
+            --subheading-color: #023e8a;
+            --paragraph-color: #555;
+            --qa-border: #b3e5fc; /* Lighter border */
+            --category-button-bg: #0096c7; /* Blue button */
+            --category-button-hover: #00b4d8; /* Lighter blue on hover */
+            --back-button-bg: #ccc;
+            --back-button-hover: #bbb;
+            --back-button-color: #333;
+            --footer-bg: #023e8a;
+            --footer-color: white;
+            --container-max-width: 1200px; /* Max width for container */
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            --bg-color: #1a1a2e; /* Dark background */
+            --text-color: #e0e0e0; /* Light text */
+            --header-bg: #16213e; /* Darker header */
+            --header-border: #0f3460; /* Dark border */
+            --sidebar-bg: #0f3460; /* Dark sidebar */
+            --sidebar-link-hover: #16213e; /* Highlight on hover */
+            --main-content-bg: #1e293b; /* Darker main content for dark mode */
+            --main-content-shadow: rgba(0, 0, 0, 0.3);
+            --heading-color: #e94560; /* Reddish heading */
+            --subheading-color: #a27bda; /* Lighter Purple subheading for dark mode */
+            --paragraph-color: #b0b0b0; /* Lighter paragraph */
+            --qa-border: #533483; /* Purple border */
+            --category-button-bg: #e94560; /* Reddish button */
+            --category-button-hover: #f08a5d; /* Lighter reddish on hover */
+            --back-button-bg: #533483;
+            --back-button-hover: #6a409a;
+            --back-button-color: #e0e0e0;
+            --footer-bg: #0f3460;
+            --footer-color: #b0b0b0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif; /* Font changed */
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color); /* Use variable */
+            color: var(--text-color); /* Use variable */
+            overflow-x: hidden;
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+            display: flex; /* Use flexbox for main layout */
+            flex-direction: column; /* Arrange children in a column */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+        }
+
+        /* Wrapper for sidebar and main content */
+        .app-wrapper {
+            display: flex;
+            transition: transform 0.3s ease;
+            flex-grow: 1;
+        }
+
+        header {
+            background: var(--header-bg); /* Use variable */
+            color: white;
+            padding: 15px 0; /* Adjusted padding for container */
+            min-height: 70px;
+            border-bottom: 5px solid var(--header-border); /* Use variable */
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            position: fixed; /* Make header fixed */
+            top: 0; /* Position at the top */
+            left: 0; /* Align to the left */
+            z-index: 100; /* Ensure header is above other content */
+        }
+
+        /* Container class for centering content */
+        .container {
+            width: 100%;
+            max-width: var(--container-max-width);
+            margin: 0 auto; /* Center the container */
+            padding: 0 20px; /* Add some padding on the sides */
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* For sidebar toggle and title */
+        }
+        
+        header .container {
+             justify-content: flex-start; /* Align items to the start */
+        }
+
+
+        header h1 {
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 1.8em; /* Slightly reduced for balance */
+            flex-grow: 1; 
+            text-align: center; 
+            padding: 0 40px; /* Add padding to prevent text from going under buttons */
+        }
+
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg); /* Use variable */
+            color: white;
+            padding: 20px;
+            padding-top: 90px; /* Adjust to be below the fixed header */
+            box-sizing: border-box;
+            flex-shrink: 0;
+            height: 100vh;
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            overflow-y: auto;
+            transform: translateX(-250px);
+            transition: transform 0.3s ease-in-out; 
+            z-index: 999; /* Lower z-index than header but above overlay */
+            box-shadow: 2px 0 10px rgba(0,0,0,0.7); 
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.7); 
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px; /* Increased padding for better touch targets */
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar ul li a:hover, .sidebar ul li a.active { /* Style for active link */
+            background-color: var(--sidebar-link-hover); 
+            color: var(--text-color); 
+        }
+
+        .sidebar-icon {
+            margin-right: 10px;
+        }
+
+        /* Sidebar toggle button */
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            padding: 5px;
+            display: block; 
+            z-index: 1001; /* Above header content */
+            margin-right: 15px; /* Space between toggle and title */
+        }
+
+        /* Main content styles */
+        .main-content-wrapper {
+            flex-grow: 1;
+            padding: 20px;
+            width: 100%; 
+            box-sizing: border-box;
+            transition: margin-left 0.3s ease;
+            position: relative; 
+            padding-top: 90px; 
+        }
+
+        .app-wrapper.sidebar-open .main-content-wrapper {
+            margin-left: 250px;
+        }
+
+        .main-content {
+            padding: 20px;
+            background: var(--main-content-bg); 
+            margin-top: 0; 
+            border-radius: 10px;
+            box-shadow: 0 4px 8px var(--main-content-shadow); 
+        }
+
+        /* Dynamic content area styles */
+        #dynamic-content {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        #dynamic-content h2 {
+            text-align: center;
+            margin-bottom: 25px; /* Increased margin */
+            font-size: 1.8em; /* Larger heading */
+            color: var(--heading-color); 
+        }
+
+        #dynamic-content > p { /* Targeting direct paragraph children for intro text */
+            text-align: left; /* Align general paragraphs to the left for readability */
+            margin-bottom: 15px; 
+            font-size: 1em; 
+            line-height: 1.6;
+            color: var(--paragraph-color); 
+        }
+        
+        #dynamic-content > p.centered-intro { /* Special class for centered intro paragraphs if needed */
+             text-align: center;
+             margin-bottom: 25px;
+             font-size: 1.1em;
+        }
+
+
+        #dynamic-content h3 {
+            color: var(--subheading-color); 
+            margin-top: 25px; /* More space above subheadings */
+            margin-bottom: 10px; /* Reduced margin below h3 */
+            text-align: left; /* Align h3 to left */
+            font-size: 1.5em; /* Larger subheading */
+        }
+        
+        #dynamic-content h4 { /* Styling for h4 if used within dynamic content */
+            color: var(--heading-color);
+            margin-top: 20px;
+            margin-bottom: 8px;
+            text-align: left;
+            font-size: 1.2em;
+        }
+        
+        #dynamic-content ul { /* Basic styling for lists in dynamic content */
+            list-style-position: outside;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        #dynamic-content ul li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: var(--paragraph-color);
+        }
+
+
+        .qa-pair {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--qa-border); 
+        }
+
+        .qa-pair:last-child {
+            border-bottom: none;
+        }
+
+        .qa-pair strong {
+            color: var(--heading-color); 
+            font-size: 1.1em; /* Slightly larger question text */
+            display: block; /* Make question bold and on its own line */
+            margin-bottom: 5px;
+        }
+
+        .qa-pair p {
+            margin-top: 0; /* Adjust if strong is block */
+            margin-bottom: 0;
+            line-height: 1.7; /* Improved readability */
+            color: var(--paragraph-color); /* Ensure paragraph color is applied */
+            text-align: left; /* Ensure QA paragraphs are left-aligned */
+        }
+
+        /* Category list display */
+        .category-list-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--qa-border); 
+        }
+
+        .category-list-container h3 { /* This h3 is often centered for "Explore categories" */
+            text-align: center;
+            margin-bottom: 20px; /* Increased margin */
+            color: var(--paragraph-color); 
+        }
+
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Adjusted gap for more buttons */
+            justify-content: center;
+        }
+
+        .category-list .category-button {
+            background-color: var(--category-button-bg); 
+            color: white;
+            padding: 10px 15px; /* Slightly smaller padding for more buttons */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.95em; /* Slightly smaller font for more buttons */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .category-list .category-button:hover {
+            background-color: var(--category-button-hover); 
+        }
+
+        .category-list .category-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Category Image */
+        .category-image {
+            display: block; 
+            max-width: 100%; 
+            height: auto; 
+            margin: 15px auto 20px auto; /* Adjusted margin */
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        }
+
+        /* Back button container and style */
+        #backButtonContainer {
+            z-index: 1001; 
+            display: none; 
+            margin-left: auto; 
+        }
+
+        #backButtonContainer.visible {
+            display: block; 
+        }
+
+        .back-button {
+            background: none; 
+            border: none; 
+            color: white; 
+            padding: 5px; 
+            cursor: pointer;
+            font-size: 1.8em; 
+            line-height: 1;
+            transition: opacity 0.3s ease; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-button:hover {
+            opacity: 0.8; 
+            background-color: transparent; 
+        }
+
+        .back-button svg {
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+        }
+
+        /* Overlay to close sidebar when clicking outside */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998; 
+            display: none;
+            transition: opacity 0.3s ease-in-out; 
+            opacity: 0;
+        }
+
+        .overlay.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Footer styles */
+        footer {
+            background: var(--footer-bg); 
+            color: var(--footer-color); 
+            text-align: center;
+            padding: 20px 0; 
+            margin-top: auto; 
+        }
+        
+        footer .container {
+            justify-content: center; 
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        /* Settings Page Styles */
+        .settings-options {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--qa-border); 
+        }
+        
+        .settings-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: var(--main-content-bg);
+            border: 1px solid var(--qa-border);
+            border-radius: 8px;
+        }
+
+        .settings-section h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--subheading-color); 
+            font-size: 1.3em;
+            text-align: left; /* Ensure settings section headers are left aligned */
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-start; /* Align theme buttons to the left */
+        }
+
+        .theme-switcher button {
+            padding: 10px 18px; 
+            margin-right: 0; 
+            border: none;
+            border-radius: 5px; 
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            background-color: var(--category-button-bg); 
+            color: white;
+        }
+
+        .theme-switcher button:hover {
+            opacity: 0.9; 
+        }
+
+        .theme-switcher button.active {
+            background-color: var(--sidebar-link-hover); 
+            opacity: 1;
+        }
+
+        /* Share and Rate Specific Styles */
+        .share-options, .rate-options {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align share/rate options to the left */
+            gap: 15px;
+            margin-top: 10px; /* Reduced margin-top */
+        }
+
+        .share-option, .rate-option {
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            padding: 10px; 
+            border-radius: 5px;
+        }
+
+        .share-option:hover, .rate-option:hover {
+            color: var(--subheading-color);
+            background-color: rgba(0,0,0,0.05); 
+        }
+        
+        body.dark-mode .share-option:hover, body.dark-mode .rate-option:hover {
+             background-color: rgba(255,255,255,0.08);
+        }
+
+        .share-option svg, .rate-option svg {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            fill: currentColor; 
+        }
+
+        .copy-link-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 400px; 
+        }
+
+        .copy-link-container input[type="text"] {
+            padding: 10px; 
+            border: 1px solid var(--qa-border); 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            border-radius: 4px;
+            font-size: 1em;
+            flex-grow: 1;
+        }
+
+        .copy-link-container button {
+            padding: 10px 18px; 
+            background-color: var(--category-button-bg);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-link-container button:hover {
+            background-color: var(--category-button-hover);
+        }
+        
+        #copyFeedback {
+            font-size: 0.9em;
+            color: var(--subheading-color);
+            margin-top: 5px;
+            height: 1em; 
+        }
+
+
+        .review-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--qa-border);
+            text-align: left; /* Align review section content to left */
+        }
+        
+        .review-section h3 { /* For "प्रतिक्रिया दिनुहोस्" heading */
+             text-align: left;
+             margin-bottom: 15px;
+        }
+
+        .review-section textarea {
+            width: 100%; /* Make textarea full width of its container */
+            padding: 10px;
+            border: 1px solid var(--qa-border); 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            border-radius: 4px;
+            font-size: 1em;
+            min-height: 100px;
+            margin-bottom: 10px;
+            box-sizing: border-box; 
+        }
+
+        .review-section button {
+            padding: 10px 20px;
+            background-color: var(--category-button-bg);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            display: block; /* Make button block to align left if needed or manage with flex */
+            margin-top: 10px; /* Add some margin if it's block */
+        }
+
+        .review-section button:hover {
+            background-color: var(--category-button-hover);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: translateX(0);
+                position: fixed; 
+                height: 100vh; 
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1); 
+                z-index: 999; 
+            }
+            .main-content-wrapper {
+                margin-left: 250px;
+                padding-top: 90px; 
+            }
+            .sidebar-toggle {
+                display: none; 
+            }
+            .app-wrapper.sidebar-open .main-content-wrapper {
+                margin-left: 250px; 
+            }
+            .overlay {
+                display: none !important; 
+            }
+            header h1 {
+                text-align: center; 
+                padding: 0 60px 0 0; 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+                padding-top: 70px; 
+                z-index: 1000; 
+            }
+            .main-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+                padding: 10px;
+                padding-top: 70px; 
+            }
+            #dynamic-content > p, #dynamic-content h3, #dynamic-content h4, .settings-section h4, .review-section {
+                text-align: left; /* Ensure left alignment on mobile too */
+            }
+             .category-list-container h3 { /* This specific h3 can remain centered */
+                text-align: center;
+            }
+            .sidebar ul li a {
+                font-size: 1em; 
+                padding: 12px 15px;
+            }
+            .sidebar-icon {
+                margin-right: 8px;
+            }
+            header {
+                padding: 10px 0; 
+                min-height: 50px;
+            }
+             header .container {
+                padding: 0 10px; 
+            }
+            header h1 {
+                font-size: 1.3em; 
+                padding: 0 30px; 
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .category-list .category-button { /* Adjusted for mobile */
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+            .sidebar-toggle {
+                display: block; 
+                font-size: 1.8em; 
+            }
+            .app-wrapper.sidebar-open .main-content-wrapper {
+                margin-left: 0; 
+            }
+            .settings-section h4 {
+                font-size: 1.2em;
+            }
+            .theme-switcher {
+                justify-content: flex-start; /* Keep left aligned on mobile */
+            }
+            .theme-switcher button {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+            .copy-link-container {
+                flex-direction: column; 
+                align-items: stretch;
+            }
+            .copy-link-container input[type="text"], .copy-link-container button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+             .review-section textarea {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper" id="appWrapper">
+        <div class="sidebar" id="sidebar">
+            <ul>
+                <li>
+                    <a href="#" data-menu="गृहपृष्ठ" class="active"> <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        गृहपृष्ठ
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="ज्ञान-श्रेणीहरू">
+                         <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        ज्ञान श्रेणीहरू
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="सूचनाहरू">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        सूचनाहरू
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="सेटिङ्ग्स">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0-.33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        सेटिङ्ग्स
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="About Us">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        About Us
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="Disclaimer">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Disclaimer
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="Privacy Policy">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Privacy Policy
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="Contact">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2.008 15.92 15.92 0 0 1-11.52-4.54L4.9 12.41a15.92 15.92 0 0 1-4.54-11.52A2 2 0 0 1 2.08 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81l-1.1 1.1a11.05 11.05 0 0 0 7.77 7.78l1.1-1.1a12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        Contact
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="Share">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        Share
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-menu="Rate App!">
+                        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.75l-6.17 3.25 1.18-6.88L2.38 9.75l6.91-1L12 2.75l3.71 6 6.91 1-4.63 4.37 1.18 6.88z"></path></svg>
+                        Rate App!
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="main-content-wrapper" id="mainContentWrapper">
+            <header>
+                <div class="container">
+                    <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+                    <h1 id="headerTitle">गृहपृष्ठ</h1> <div id="backButtonContainer">
+                        <button class="back-button" id="backButton">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="main-content"> 
+                <div id="dynamic-content">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> ज्ञान हब. सर्वाधिकार सुरक्षित।</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Firebase SDKs import - Commented out as requested
+        /*
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-storage.js";
+        */
+
+        // Firebase configuration - Commented out
+        /*
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+        */
+
+        // Firebase services initialization - Commented out
+        let app, analytics, db, auth, database, storage;
+        let firebaseInitialized = false; // Flag to track if Firebase was intended to be used
+
+        /*
+        try {
+            if (firebaseConfig.apiKey === "YOUR_API_KEY" || firebaseConfig.projectId === "YOUR_PROJECT_ID") {
+                 console.warn("Firebase configuration is using placeholder values. Firebase services will not be initialized.");
+            } else {
+                app = initializeApp(firebaseConfig);
+                analytics = getAnalytics(app);
+                db = getFirestore(app); 
+                auth = getAuth(app); 
+                database = getDatabase(app); 
+                storage = getStorage(app); 
+                firebaseInitialized = true;
+                console.log("Firebase initialized (Analytics, Firestore, Auth, Realtime DB, Storage)!");
+            }
+        } catch (error) {
+            console.error("Error initializing Firebase:", error.message);
+            const dynamicContentEl = document.getElementById('dynamic-content');
+            if (dynamicContentEl) {
+                dynamicContentEl.innerHTML = `<p style="color: red; text-align: center;"><strong>Firebase Error:</strong> ${error.message}</p>`;
+            }
+        }
+        */
+        console.log("Firebase connection has been removed/commented out as requested.");
+        const dynamicContentEl = document.getElementById('dynamic-content');
+        if (dynamicContentEl && !dynamicContentEl.innerHTML.includes("Firebase सेवाओं से कनेक्ट करने में त्रुटि")) {
+        }
+
+
+        // --- DOM Elements ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const overlay = document.getElementById('overlay');
+        const dynamicContent = document.getElementById('dynamic-content'); 
+        const headerTitle = document.getElementById('headerTitle');
+        const backButton = document.getElementById('backButton');
+        const backButtonContainer = document.getElementById('backButtonContainer');
+        const appWrapper = document.getElementById('appWrapper');
+        
+        // --- State ---
+        let contentHistory = []; 
+
+        // --- Sidebar Functionality ---
+        if (sidebarToggle && sidebar && overlay && appWrapper) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('visible');
+                if (window.innerWidth > 768) { 
+                    appWrapper.classList.toggle('sidebar-open');
+                }
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('visible');
+                 if (window.innerWidth > 768) {
+                    appWrapper.classList.remove('sidebar-open');
+                }
+            });
+        } else {
+            console.error("Sidebar elements not found. Sidebar functionality may be affected.");
+        }
+        
+        // --- Responsive Sidebar Behavior ---
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                sidebar.classList.add('open'); 
+                appWrapper.classList.add('sidebar-open'); 
+                overlay.classList.remove('visible'); 
+            } else {
+                if (!sidebar.classList.contains('user-opened-mobile')) {
+                     sidebar.classList.remove('open');
+                }
+                appWrapper.classList.remove('sidebar-open'); 
+            }
+        }
+        
+        if(sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                if(window.innerWidth <= 768) {
+                    if(sidebar.classList.contains('open')) {
+                        sidebar.classList.add('user-opened-mobile');
+                    } else {
+                        sidebar.classList.remove('user-opened-mobile');
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('resize', handleResize);
+        
+
+        // --- Dynamic Content Loading ---
+        const menuLinks = document.querySelectorAll('.sidebar ul li a');
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const menuKey = this.dataset.menu;
+                const menuText = this.textContent.trim();
+                
+                if (contentHistory.length === 0 || contentHistory[contentHistory.length - 1].key !== menuKey) {
+                    contentHistory.push({ key: getCurrentPageKey(), title: headerTitle.textContent, html: dynamicContent.innerHTML });
+                }
+
+                loadContent(menuKey, menuText);
+
+                menuLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                    sidebar.classList.remove('user-opened-mobile');
+                    overlay.classList.remove('visible');
+                }
+            });
+        });
+        
+        function getCurrentPageKey() {
+            const activeLink = document.querySelector('.sidebar ul li a.active');
+            return activeLink ? activeLink.dataset.menu : 'गृहपृष्ठ';
+        }
+
+
+        async function loadContent(pageKey, pageTitle) {
+            if (!dynamicContent || !headerTitle) {
+                console.error("Dynamic content area or header title element not found.");
+                return;
+            }
+            dynamicContent.innerHTML = '<p style="text-align:center; padding: 20px;">लोड हुँदैछ...</p>'; 
+            headerTitle.textContent = pageTitle;
+            let contentHtml = '';
+
+            if (pageKey !== 'गृहपृष्ठ' && pageKey !== 'ज्ञान-श्रेणीहरू') { 
+                backButtonContainer.classList.add('visible');
+            } else {
+                backButtonContainer.classList.remove('visible');
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 100)); 
+
+            try {
+                switch (pageKey) {
+                    case 'गृहपृष्ठ':
+                        contentHtml = `
+                            <h2>स्वागतम्!</h2>
+                            <p class="centered-intro">ज्ञान हबमा तपाईंलाई स्वागत छ। यहाँ विभिन्न विषयहरूमा जानकारी पाउन सक्नुहुन्छ।</p>
+                            <img src="https://placehold.co/600x300/0077b6/ffffff?text=ज्ञान+हब+नेपाल" alt="ज्ञान हब ब्यानर" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x300/cccccc/333333?text=Image+Not+Found';">
+                            <h3>विशेषताहरू:</h3>
+                            <div class="qa-pair">
+                                <p><strong>विविध सामग्री:</strong> विज्ञान, प्रविधि, इतिहास, र थपमा लेखहरू।</p>
+                            </div>
+                            <div class="qa-pair">
+                                <p><strong>प्रयोगकर्ता-मैत्री:</strong> सजिलो नेभिगेसन र स्पष्ट प्रस्तुति।</p>
+                            </div>
+                             <div class="category-list-container">
+                                <h3>मुख्य श्रेणीहरू अन्वेषण गर्नुहोस्</h3>
+                                <div class="category-list">
+                                    <button class="category-button" data-category="नेपालको भूगोल">नेपालको भूगोल</button>
+                                    <button class="category-button" data-category="नेपालको इतिहास">नेपालको इतिहास</button>
+                                    <button class="category-button" data-category="विश्व इतिहास">विश्व इतिहास</button>
+                                    <button class="category-button" data-category="विश्व भूगोल">विश्व भूगोल</button>
+                                    <button class="category-button" data-category="खेलकुद">खेलकुद</button>
+                                    <button class="category-button" data-category="विज्ञान">विज्ञान</button>
+                                    <button class="category-button" data-category="साहित्य र संस्कृति">साहित्य र संस्कृति</button>
+                                    <button class="category-button" data-category="प्रविधि">प्रविधि</button> 
+                                </div>
+                            </div>`;
+                        break;
+                    case 'ज्ञान-श्रेणीहरू':
+                        contentHtml = `<h2>ज्ञान श्रेणीहरू</h2><p class="centered-intro">आफ्नो रुचिको श्रेणी छान्नुहोस्:</p>`;
+                        const staticCategories = [
+                            { id: "nepal-bhugol", name: "नेपालको भूगोल" },
+                            { id: "nepal-itihas", name: "नेपालको इतिहास" },
+                            { id: "vishwa-itihas", name: "विश्व इतिहास" },
+                            { id: "vishwa-bhugol", name: "विश्व भूगोल" },
+                            { id: "khelkud", name: "खेलकुद" },
+                            { id: "vigyan", name: "विज्ञान" },
+                            { id: "sahitya-sanskriti", name: "साहित्य र संस्कृति" },
+                            { id: "prabidhi", name: "प्रविधि" }
+                        ];
+                        if (staticCategories.length > 0) {
+                            contentHtml += `<div class="category-list">`;
+                            staticCategories.forEach(cat => {
+                                contentHtml += `<button class="category-button" data-category="${cat.name}" data-category-id="${cat.id}">${cat.name}</button>`;
+                            });
+                            contentHtml += `</div>`;
+                        } else {
+                             contentHtml += `<p>अहिले कुनै श्रेणीहरू उपलब्ध छैनन्।</p>`;
+                        }
+                        contentHtml += `<p style="text-align:center; margin-top:20px; font-style:italic; color:var(--paragraph-color);">(नोट: श्रेणीहरू हाल स्थिर रूपमा देखाइएका छन्। डाटाबेस जडान भएपछि यी गतिशील हुनेछन्।)</p>`;
+                        break;
+                    case 'सूचनाहरू':
+                        contentHtml = `<h2>सूचनाहरू</h2><p class="centered-intro">अहिले कुनै नयाँ सूचनाहरू छैनन्।</p>`;
+                        break;
+                    case 'सेटिङ्ग्स':
+                        contentHtml = `
+                            <h2>सेटिङ्ग्स</h2>
+                            <div class="settings-section">
+                                <h4>थिम परिवर्तन गर्नुहोस्</h4>
+                                <div class="theme-switcher">
+                                    <button id="lightModeBtn">लाइट मोड</button>
+                                    <button id="darkModeBtn">डार्क मोड</button>
+                                </div>
+                            </div>
+                            <div class="settings-section">
+                                <h4>भाषा (अहिले उपलब्ध छैन)</h4>
+                                <p>चाँडै आउँदैछ...</p>
+                            </div>`;
+                        break;
+                    case 'About Us':
+                        contentHtml = `
+                            <h2>About Us – Gyan Hub</h2>
+                            <p>Gyan Hub is an educational and informational digital platform dedicated to providing knowledge, information, and entertainment rooted in the Nepali language and culture. Our primary goal is to connect the Nepali community with diverse global knowledge and make educational and general content easily accessible in a simple and user-friendly language.</p>
+                            <p>At Gyan Hub, you can explore content across various fields – such as world and Nepalese history, geography, science, literature, sports, entertainment, and current affairs. Our app and website are specially designed with students, competitive exam aspirants, and curious learners in mind.</p>
+                            <p>We prioritize bilingual (Nepali–English) content so users can learn in the language they are most comfortable with. Our platform allows users to choose categories, play quizzes with timers, track scores, and evaluate their progress in real-time.</p>
+                            <p>We believe that knowledge should be for everyone. That’s why we are committed to continuously developing free and accessible content for all. If you have any suggestions, feedback, or are interested in collaborating with us, feel free to contact us at <a href="mailto:samarsummer03@gmail.com">samarsummer03@gmail.com</a>.</p>
+                            <p>Welcome to the world of knowledge with Gyan Hub!</p>`;
+                        break;
+                    case 'Disclaimer':
+                        contentHtml = `
+                            <h2>Disclaimer</h2>
+                            <h3>Interpretation</h3>
+                            <p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+                            <h3>Definitions</h3>
+                            <p>For the purposes of this Disclaimer:</p>
+                            <ul>
+                                <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Disclaimer) refers to Gyan hub.</li>
+                                <li><strong>Service</strong> refers to the Application.</li>
+                                <li><strong>You</strong> means the individual accessing the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
+                                <li><strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device named Gyan hub.</li>
+                            </ul>
+                            <h3>Disclaimer</h3>
+                            <p>The information contained on the Service is for general information purposes only.</p>
+                            <p>The Company assumes no responsibility for errors or omissions in the contents of the Service.</p>
+                            <p>In no event shall the Company be liable for any special, direct, indirect, consequential, or incidental damages or any damages whatsoever, whether in an action of contract, negligence or other tort, arising out of or in connection with the use of the Service or the contents of the Service. The Company reserves the right to make additions, deletions, or modifications to the contents on the Service at any time without prior notice. This Disclaimer has been created with the help of the Disclaimer Generator.</p>
+                            <p>The Company does not warrant that the Service is free of viruses or other harmful components.</p>
+                            <h3>External Links Disclaimer</h3>
+                            <p>The Service may contain links to external websites that are not provided or maintained by or in any way affiliated with the Company.</p>
+                            <p>Please note that the Company does not guarantee the accuracy, relevance, timeliness, or completeness of any information on these external websites.</p>
+                            <h3>Errors and Omissions Disclaimer</h3>
+                            <p>The information given by the Service is for general guidance on matters of interest only. Even if the Company takes every precaution to ensure that the content of the Service is both current and accurate, errors can occur. Plus, given the changing nature of laws, rules and regulations, there may be delays, omissions or inaccuracies in the information contained on the Service.</p>
+                            <p>The Company is not responsible for any errors or omissions, or for the results obtained from the use of this information.</p>
+                            <h3>Fair Use Disclaimer</h3>
+                            <p>The Company may use copyrighted material which has not always been specifically authorized by the copyright owner. The Company is making such material available for criticism, comment, news reporting, teaching, scholarship, or research.</p>
+                            <p>The Company believes this constitutes a "fair use" of any such copyrighted material as provided for in section 107 of the United States Copyright law.</p>
+                            <p>If You wish to use copyrighted material from the Service for your own purposes that go beyond fair use, You must obtain permission from the copyright owner.</p>
+                            <h3>Views Expressed Disclaimer</h3>
+                            <p>The Service may contain views and opinions which are those of the authors and do not necessarily reflect the official policy or position of any other author, agency, organization, employer or company, including the Company.</p>
+                            <p>Comments published by users are their sole responsibility and the users will take full responsibility, liability and blame for any libel or litigation that results from something written in or as a direct result of something written in a comment. The Company is not liable for any comment published by users and reserves the right to delete any comment for any reason whatsoever.</p>
+                            <h3>No Responsibility Disclaimer</h3>
+                            <p>The information on the Service is provided with the understanding that the Company is not herein engaged in rendering legal, accounting, tax, or other professional advice and services. As such, it should not be used as a substitute for consultation with professional accounting, tax, legal or other competent advisers.</p>
+                            <p>In no event shall the Company or its suppliers be liable for any special, incidental, indirect, or consequential damages whatsoever arising out of or in connection with your access or use or inability to access or use the Service.</p>
+                            <h3>"Use at Your Own Risk" Disclaimer</h3>
+                            <p>All information in the Service is provided "as is", with no guarantee of completeness, accuracy, timeliness or of the results obtained from the use of this information, and without warranty of any kind, express or implied, including, but not limited to warranties of performance, merchantability and fitness for a particular purpose.</p>
+                            <p>The Company will not be liable to You or anyone else for any decision made or action taken in reliance on the information given by the Service or for any consequential, special or similar damages, even if advised of the possibility of such damages.</p>
+                            <h3>Contact Us</h3>
+                            <p>If you have any questions about this Disclaimer, You can contact Us:</p>
+                            <p>By email: <a href="mailto:samarsummer03@gmail.com">samarsummer03@gmail.com</a></p>
+                        `;
+                        break;
+                    case 'Privacy Policy':
+                        contentHtml = `
+                            <h2>Privacy Policy</h2>
+                            <p>This privacy policy applies to the Gyan Hub app (hereby referred to as "Application") for mobile devices that was created by Bimal Bhandari (hereby referred to as "Service Provider") as a Free service. This service is intended for use "AS IS".</p>
+                            <h3>Information Collection and Use</h3>
+                            <p>The Application collects information when you download and use it. This information may include information such as:</p>
+                            <ul>
+                                <li>Your device's Internet Protocol address (e.g. IP address)</li>
+                                <li>The pages of the Application that you visit, the time and date of your visit, the time spent on those pages</li>
+                                <li>The time spent on the Application</li>
+                                <li>The operating system you use on your mobile device</li>
+                            </ul>
+                            <p>The Application does not gather precise information about the location of your mobile device.</p>
+                            <p>The Service Provider may use the information you provided to contact you from time to time to provide you with important information, required notices and marketing promotions.</p>
+                            <p>For a better experience, while using the Application, the Service Provider may require you to provide us with certain personally identifiable information, including but not limited to We are not collect any data information , when user use our application . The information that the Service Provider request will be retained by them and used as described in this privacy policy.</p>
+                            <h3>Third Party Access</h3>
+                            <p>Only aggregated, anonymized data is periodically transmitted to external services to aid the Service Provider in improving the Application and their service. The Service Provider may share your information with third parties in the ways that are described in this privacy statement.</p>
+                            <p>Please note that the Application utilizes third-party services that have their own Privacy Policy about handling data. Below are the links to the Privacy Policy of the third-party service providers used by the Application:</p>
+                            <ul>
+                                <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Play Services</a></li>
+                                </ul>
+                            <p>The Service Provider may disclose User Provided and Automatically Collected Information:</p>
+                            <ul>
+                                <li>as required by law, such as to comply with a subpoena, or similar legal process;</li>
+                                <li>when they believe in good faith that disclosure is necessary to protect their rights, protect your safety or the safety of others, investigate fraud, or respond to a government request;</li>
+                                <li>with their trusted services providers who work on their behalf, do not have an independent use of the information we disclose to them, and have agreed to adhere to the rules set forth in this privacy statement.</li>
+                            </ul>
+                            <h3>Opt-Out Rights</h3>
+                            <p>You can stop all collection of information by the Application easily by uninstalling it. You may use the standard uninstall processes as may be available as part of your mobile device or via the mobile application marketplace or network.</p>
+                            <h3>Data Retention Policy</h3>
+                            <p>The Service Provider will retain User Provided data for as long as you use the Application and for a reasonable time thereafter. If you'd like them to delete User Provided Data that you have provided via the Application, please contact them at <a href="mailto:samarsummer03@gmail.com">samarsummer03@gmail.com</a> and they will respond in a reasonable time.</p>
+                            <h3>Children</h3>
+                            <p>The Service Provider does not use the Application to knowingly solicit data from or market to children under the age of 13.</p>
+                            <p>The Application does not address anyone under the age of 13. The Service Provider does not knowingly collect personally identifiable information from children under 13 years of age. In the case the Service Provider discover that a child under 13 has provided personal information, the Service Provider will immediately delete this from their servers. If you are a parent or guardian and you are aware that your child has provided us with personal information, please contact the Service Provider (<a href="mailto:samarsummer03@gmail.com">samarsummer03@gmail.com</a>) so that they will be able to take the necessary actions.</p>
+                            <h3>Security</h3>
+                            <p>The Service Provider is concerned about safeguarding the confidentiality of your information. The Service Provider provides physical, electronic, and procedural safeguards to protect information the Service Provider processes and maintains.</p>
+                            <h3>Changes</h3>
+                            <p>This Privacy Policy may be updated from time to time for any reason. The Service Provider will notify you of any changes to the Privacy Policy by updating this page with the new Privacy Policy. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes.</p>
+                            <p>This privacy policy is effective as of 2025-05-14</p>
+                            <h3>Your Consent</h3>
+                            <p>By using the Application, you are consenting to the processing of your information as set forth in this Privacy Policy now and as amended by us.</p>
+                            <h3>Contact Us</h3>
+                            <p>If you have any questions regarding privacy while using the Application, or have questions about the practices, please contact the Service Provider via email at <a href="mailto:samarsummer03@gmail.com">samarsummer03@gmail.com</a>.</p>
+                        `;
+                        break;
+                    case 'Contact':
+                        contentHtml = `
+                            <h2>Contact Us – Gyan Hub</h2>
+                            <p>We’re always here to connect with you! If you have any questions, feedback, suggestions, or partnership inquiries related to Gyan Hub, feel free to reach out to us. Whether you're facing technical issues, want to contribute content, or simply want to say hello, we’d love to hear from you. Your thoughts and ideas help us grow and improve our platform.</p>
+                            <p>You can email us anytime at <a href="mailto:samarsummer03@gmail.com">samarsummer03@gmail.com</a>, and we’ll do our best to respond as quickly as possible. Thank you for being a part of the Gyan Hub community!</p>
+                            
+                            <form id="contactForm" class="review-section" style="border-top: 1px solid var(--qa-border); padding-top: 20px; margin-top:30px;">
+                                <h3>Send Us a Message</h3>
+                                <input type="text" id="contactName" placeholder="Your Name" required style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 4px; border: 1px solid var(--qa-border); background-color: var(--bg-color); color: var(--text-color); box-sizing: border-box;">
+                                <input type="email" id="contactEmail" placeholder="Your Email" required style="margin-bottom: 10px; width: 100%; padding: 10px; border-radius: 4px; border: 1px solid var(--qa-border); background-color: var(--bg-color); color: var(--text-color); box-sizing: border-box;">
+                                <textarea id="contactMessage" placeholder="Your Message" required></textarea>
+                                <button type="submit">Send Message</button>
+                            </form>`;
+                        break;
+                    case 'Share':
+                        contentHtml = `
+                            <h2>एप साझा गर्नुहोस्</h2>
+                            <p>ज्ञान हब मन पर्यो? साथीहरूसँग साझा गर्नुहोस्!</p>
+                            <div class="share-options">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" class="share-option">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.84c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10.02 10.02 0 0 0 8.44-9.9C22 6.53 17.5 2.04 12 2.04z"/></svg>
+                                    Facebook मा साझा गर्नुहोस्
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('ज्ञान हब - नेपालीमा ज्ञानको स्रोत!')}" target="_blank" class="share-option">
+                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.67.9-.53 1.59-1.37 1.92-2.38-.84.5-1.78.86-2.79 1.07C18.27 4.41 17.02 4 15.64 4c-2.96 0-5.32 2.45-5.32 5.46 0 .42.05.83.14 1.22-4.42-.22-8.34-2.34-10.96-5.55-.46.79-.72 1.71-.72 2.69 0 1.89.96 3.56 2.42 4.54-.88-.03-1.7-.27-2.42-.67v.07c0 2.64 1.86 4.84 4.32 5.34-.45.12-.93.19-1.43.19-.35 0-.68-.03-1.01-.09.69 2.16 2.69 3.74 5.06 3.79-1.85 1.45-4.18 2.32-6.72 2.32-.44 0-.87-.03-1.3-.08 2.39 1.54 5.24 2.43 8.32 2.43 9.98 0 15.44-8.27 15.44-15.44l-.01-.7c1.06-.76 1.97-1.72 2.7-2.81z"/></svg>
+                                    Twitter (X) मा साझा गर्नुहोस्
+                                </a>
+                                <div class="copy-link-container">
+                                    <input type="text" value="${window.location.href}" id="shareLinkInput" readonly>
+                                    <button id="copyLinkBtn">लिङ्क कपि गर्नुहोस्</button>
+                                </div>
+                                <p id="copyFeedback"></p>
+                            </div>`;
+                        break;
+                    case 'Rate App!':
+                        contentHtml = `
+                            <h2>एपलाई मूल्याङ्कन गर्नुहोस्</h2>
+                            <p>तपाईंको प्रतिक्रिया हाम्रो लागि महत्त्वपूर्ण छ। कृपया हाम्रो एपलाई मूल्याङ्कन गर्नुहोस्:</p>
+                            <div class="rate-options">
+                                <a href="#" class="rate-option" onclick="alert('Play Store मा मूल्याङ्कन गर्ने सुविधा चाँडै आउँदैछ!'); return false;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.75l-6.17 3.25 1.18-6.88L2.38 9.75l6.91-1L12 2.75l3.71 6 6.91 1-4.63 4.37 1.18 6.88z"/></svg>
+                                    Play Store मा मूल्याङ्कन गर्नुहोस्
+                                </a>
+                                <a href="#" class="rate-option" onclick="alert('App Store मा मूल्याङ्कन गर्ने सुविधा चाँडै आउँदैछ!'); return false;">
+                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.75l-6.17 3.25 1.18-6.88L2.38 9.75l6.91-1L12 2.75l3.71 6 6.91 1-4.63 4.37 1.18 6.88z"/></svg>
+                                    App Store मा मूल्याङ्कन गर्नुहोस्
+                                </a>
+                            </div>
+                            <div class="review-section">
+                                <h3>प्रतिक्रिया दिनुहोस्</h3>
+                                <form id="reviewForm">
+                                    <textarea id="reviewText" placeholder="यहाँ आफ्नो प्रतिक्रिया लेख्नुहोस्..." required></textarea>
+                                    <button type="submit">प्रतिक्रिया पठाउनुहोस्</button>
+                                </form>
+                            </div>`;
+                        break;
+                    // --- Cases for New Categories with Placeholder Content ---
+                    case 'नेपालको भूगोल':
+                        contentHtml = `<h2>नेपालको भूगोल</h2>
+                                       <img src="https://placehold.co/600x250/1abc9c/ffffff?text=नेपालको+भूगोल" alt="नेपालको भूगोल" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>यो खण्डमा नेपालको भौगोलिक स्थिति, हिमाल, पहाड, तराई, नदीनाला, ताल, जलवायु, र प्राकृतिक स्रोतहरूको बारेमा विस्तृत जानकारी समावेश गरिनेछ।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>नेपालको धरातलीय स्वरूप</li>
+                                           <li>प्रमुख हिमाल श्रृंखलाहरू र चुचुराहरू</li>
+                                           <li>मुख्य नदी प्रणालीहरू र तालहरू</li>
+                                           <li>नेपालको हावापानी र मौसम</li>
+                                           <li>वनस्पति तथा वन्यजन्तु</li>
+                                           <li>प्राकृतिक सम्पदा र संरक्षण क्षेत्रहरू</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपालको सबैभन्दा अग्लो हिमाल कुन हो?</strong><p>उत्तर: सगरमाथा (८८४८.८६ मिटर)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपाललाई कतिवटा भौगोलिक क्षेत्रमा विभाजन गरिएको छ?</strong><p>उत्तर: ३ (हिमाल, पहाड, तराई)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपालको सबैभन्दा ठूलो ताल कुन हो?</strong><p>उत्तर: रारा ताल।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: कोशी नदीका प्रमुख सहायक नदीहरू के के हुन्?</strong><p>उत्तर: अरुण, तमोर, सुनकोशी, इन्द्रावती, तामाकोशी, लिखु र दूधकोशी।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                    case 'नेपालको इतिहास':
+                        contentHtml = `<h2>नेपालको इतिहास</h2>
+                                       <img src="https://placehold.co/600x250/3498db/ffffff?text=नेपालको+इतिहास" alt="नेपालको इतिहास" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>यस खण्डमा नेपालको प्राचीन कालदेखि आधुनिक कालसम्मका महत्वपूर्ण ऐतिहासिक घटनाहरू, राजवंशहरू, व्यक्तित्वहरू, र सामाजिक-सांस्कृतिक परिवर्तनहरूको अध्ययन गरिनेछ।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>प्राचीन नेपाल (किराँत काल, लिच्छवि काल)</li>
+                                           <li>मध्यकालीन नेपाल (मल्ल काल, बाइसे-चौबिसे राज्यहरू)</li>
+                                           <li>आधुनिक नेपाल (शाह वंश, राणा शासन, प्रजातन्त्र)</li>
+                                           <li>प्रमुख ऐतिहासिक व्यक्तित्वहरू</li>
+                                           <li>नेपाल एकीकरण अभियान</li>
+                                           <li>सामाजिक र सांस्कृतिक विकासक्रम</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: लिच्छवि कालका एक प्रसिद्ध राजा को थिए?</strong><p>उत्तर: अंशुवर्मा।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपाल एकीकरणको सुरुवात कसले गरेका थिए?</strong><p>उत्तर: पृथ्वीनारायण शाह।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: राणा शासन कति वर्षसम्म चल्यो?</strong><p>उत्तर: १०४ वर्ष (वि.सं. १९०३ - २००७)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपालमा प्रजातन्त्रको स्थापना कहिले भयो?</strong><p>उत्तर: वि.सं. २००७ साल फागुन ७ गते।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                    case 'विश्व इतिहास':
+                        contentHtml = `<h2>विश्व इतिहास</h2>
+                                       <img src="https://placehold.co/600x250/9b59b6/ffffff?text=विश्व+इतिहास" alt="विश्व इतिहास" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>विश्व इतिहास खण्डमा विश्वका प्रमुख सभ्यताहरू, साम्राज्यहरू, क्रान्तिहरू, युद्धहरू, र महत्वपूर्ण ऐतिहासिक मोडहरूको जानकारी प्रस्तुत गरिनेछ।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>प्राचीन सभ्यताहरू (मेसोपोटामिया, इजिप्ट, ग्रीस, रोम)</li>
+                                           <li>मध्यकालीन विश्व (सामन्तवाद, धर्मयुद्ध)</li>
+                                           <li>पुनर्जागरण र धर्मसुधार आन्दोलन</li>
+                                           <li>प्रमुख क्रान्तिहरू (अमेरिकी, फ्रान्सेली, रुसी)</li>
+                                           <li>विश्व युद्धहरू र त्यसपछिको विश्व</li>
+                                           <li>उपनिवेशवाद र स्वतन्त्रता संग्रामहरू</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: प्रथम विश्वयुद्ध कहिले सुरु भयो?</strong><p>उत्तर: सन् १९१४ मा।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: पुनर्जागरणको सुरुवात कुन देशबाट भएको मानिन्छ?</strong><p>उत्तर: इटाली।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: औद्योगिक क्रान्तिको सुरुवात कहाँबाट भयो?</strong><p>उत्तर: बेलायत (ग्रेट ब्रिटेन)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: अमेरिकी स्वतन्त्रता संग्रामका एक प्रमुख नेता को थिए?</strong><p>उत्तर: जर्ज वाशिङ्टन।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                    case 'विश्व भूगोल':
+                        contentHtml = `<h2>विश्व भूगोल</h2>
+                                       <img src="https://placehold.co/600x250/2ecc71/ffffff?text=विश्व+भूगोल" alt="विश्व भूगोल" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>यो खण्डले विश्वका महादेशहरू, प्रमुख देशहरू, तिनीहरूको भौगोलिक स्थिति, प्राकृतिक स्रोतहरू, जलवायु, जनसंख्या, र आर्थिक गतिविधिहरू बारे जानकारी प्रदान गर्नेछ।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>महादेशहरूको सामान्य परिचय</li>
+                                           <li>प्रमुख देशहरूको भौगोलिक र आर्थिक स्थिति</li>
+                                           <li>विश्वको जलवायु क्षेत्रहरू</li>
+                                           <li>प्रमुख पर्वत श्रृंखला, नदी, र मरुभूमिहरू</li>
+                                           <li>जनसंख्या वितरण र मानव बस्ती</li>
+                                           <li>प्राकृतिक स्रोत र तिनको उपयोग</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: विश्वको सबैभन्दा ठूलो महादेश कुन हो?</strong><p>उत्तर: एसिया महादेश।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: विश्वको सबैभन्दा लामो नदी कुन हो?</strong><p>उत्तर: नाइल नदी।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: विश्वको सबैभन्दा ठूलो मरुभूमि कुन हो?</strong><p>उत्तर: सहारा मरुभूमि (अन्टार्कटिका र आर्कटिक बाहेक)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: विश्वको सबैभन्दा बढी जनसंख्या भएको देश कुन हो?</strong><p>उत्तर: भारत (वर्तमान तथ्याङ्क अनुसार)।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                    case 'खेलकुद':
+                        contentHtml = `<h2>खेलकुद</h2>
+                                       <img src="https://placehold.co/600x250/e67e22/ffffff?text=खेलकुद" alt="खेलकुद" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>खेलकुद खण्डमा विभिन्न राष्ट्रिय तथा अन्तर्राष्ट्रिय खेलहरू, प्रतियोगिताहरू, चर्चित खेलाडीहरू, खेलका नियमहरू, र खेलकुद जगतका नवीनतम समाचारहरू समावेश गरिनेछन्।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>फुटबल, क्रिकेट, भलिबल जस्ता प्रमुख खेलहरू</li>
+                                           <li>ओलम्पिक खेलकुद र अन्य अन्तर्राष्ट्रिय प्रतियोगिताहरू</li>
+                                           <li>नेपाली खेलकुदको वर्तमान अवस्था र इतिहास</li>
+                                           <li>चर्चित राष्ट्रिय र अन्तर्राष्ट्रिय खेलाडीहरू</li>
+                                           <li>खेलकुदका नियम र शब्दावली</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: फिफा विश्वकप फुटबल कति वर्षको अन्तरालमा आयोजना हुन्छ?</strong><p>उत्तर: प्रत्येक ४ वर्षमा।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: ओलम्पिक खेलको सुरुवात कुन देशबाट भएको हो?</strong><p>उत्तर: ग्रीस (प्राचीन ओलम्पिक)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: क्रिकेट खेलमा एउटा टिममा कति खेलाडी हुन्छन्?</strong><p>उत्तर: ११ खेलाडी।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपालको राष्ट्रिय खेल कुन हो?</strong><p>उत्तर: भलिबल।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                    case 'विज्ञान': 
+                        contentHtml = `<h2>विज्ञान</h2>
+                                       <img src="https://placehold.co/600x250/e74c3c/ffffff?text=विज्ञान" alt="विज्ञान" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>यस खण्डमा विज्ञानका आधारभूत सिद्धान्तहरू, प्रमुख आविष्कारहरू, प्राविधिक उन्नतिहरू, र भौतिकशास्त्र, रसायनशास्त्र, जीवविज्ञान, र खगोल विज्ञान जस्ता विभिन्न वैज्ञानिक क्षेत्रहरूबाट रोचक तथ्यहरू समावेश गरिनेछ।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>भौतिकशास्त्रका आधारभूत नियमहरू (न्यूटनका नियम, थर्मोडाइनामिक्स)</li>
+                                           <li>रासायनिक प्रतिक्रियाहरू र आवधिक तालिका</li>
+                                           <li>कोशिका विज्ञान, आनुवंशिकी, र विकास</li>
+                                           <li>सौर्यमण्डल, तारा, र आकाशगंगाहरू</li>
+                                           <li>उल्लेखनीय वैज्ञानिकहरू र उनीहरूको योगदान</li>
+                                           <li>आधुनिक वैज्ञानिक उपलब्धिहरू</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: गुरुत्वाकर्षणको नियम कसले पत्ता लगाएका हुन्?</strong><p>उत्तर: सर आइज्याक न्यूटन।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: पानीको रासायनिक सूत्र के हो?</strong><p>उत्तर: H₂O.</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: मानव शरीरमा कतिवटा हड्डी हुन्छन्?</strong><p>उत्तर: सामान्यतया २०६ वटा।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: सूर्यमण्डलको सबैभन्दा ठूलो ग्रह कुन हो?</strong><p>उत्तर: बृहस्पति ग्रह (Jupiter)।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                    case 'साहित्य र संस्कृति':
+                        contentHtml = `<h2>साहित्य र संस्कृति</h2>
+                                       <img src="https://placehold.co/600x250/f1c40f/333333?text=साहित्य+र+संस्कृति" alt="साहित्य र संस्कृति" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>यस खण्डमा नेपाली तथा विश्व साहित्यका प्रमुख धाराहरू, लेखकहरू, कृतिहरू, साथै विभिन्न जातजाति, भाषाभाषीका कला, संगीत, नृत्य, चाडपर्व, र सांस्कृतिक परम्पराहरूको जानकारी प्रस्तुत गरिनेछ।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>नेपाली साहित्यका कालखण्ड र प्रमुख साहित्यकारहरू</li>
+                                           <li>विश्व साहित्यका चर्चित कृति र लेखकहरू</li>
+                                           <li>नेपालका विभिन्न जातजातिका संस्कृति र परम्परा</li>
+                                           <li>लोक कला, संगीत, र नृत्य</li>
+                                           <li>प्रमुख चाडपर्व र तिनको महत्व</li>
+                                           <li>भाषा र लिपि</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: 'मुनामदन' कृतिका लेखक को हुन्?</strong><p>उत्तर: महाकवि लक्ष्मीप्रसाद देवकोटा।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपालको सबैभन्दा ठूलो चाड कुन हो?</strong><p>उत्तर: दशैं (विजयादशमी)।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: शेक्सपियर कुन देशका प्रसिद्ध नाटककार हुन्?</strong><p>उत्तर: इङ्गल्याण्ड।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: नेपालमा गाइने एक प्रसिद्ध लोकभाका कुन हो?</strong><p>उत्तर: देउडा, मारुनी, सोरठी (उदाहरणहरू)।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+                     case 'प्रविधि': 
+                        contentHtml = `<h2>प्रविधि</h2>
+                                       <img src="https://placehold.co/600x250/7f8c8d/ffffff?text=प्रविधि" alt="प्रविधि" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">
+                                       <p>प्रविधि खण्डमा नवीनतम प्रविधिहरू, कम्प्युटर, इन्टरनेट, मोबाइल एप्स, आर्टिफिसियल इन्टेलिजेन्स, र डिजिटल संसारका रोचक जानकारीहरू समावेश गरिनेछन्।</p>
+                                       <h3>मुख्य विषयहरू:</h3>
+                                       <ul>
+                                           <li>कम्प्युटर र इन्टरनेटको आधारभूत ज्ञान</li>
+                                           <li>मोबाइल प्रविधि र एप्स</li>
+                                           <li>आर्टिफिसियल इन्टेलिजेन्स (AI) र मेसिन लर्निङ</li>
+                                           <li>साइबर सुरक्षा र डिजिटल साक्षरता</li>
+                                           <li>भविष्यका प्रविधिहरू</li>
+                                       </ul>
+                                       <h3>केही प्रश्नोत्तर:</h3>
+                                       <div class="qa-pair"><strong>प्रश्न: WWW को पूरा रूप के हो?</strong><p>उत्तर: World Wide Web.</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: RAM को पूरा रूप के हो?</strong><p>उत्तर: Random Access Memory.</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: आर्टिफिसियल इन्टेलिजेन्स (AI) भनेको के हो?</strong><p>उत्तर: मेसिनहरूलाई मानव जस्तै सोच्न र सिक्न सक्ने बनाउने प्रविधि।</p></div>
+                                       <div class="qa-pair"><strong>प्रश्न: क्लाउड कम्प्युटिङको एक उदाहरण दिनुहोस्।</strong><p>उत्तर: गुगल ड्राइभ, ड्रपबक्स।</p></div>
+                                       <p><em>(विस्तृत सामग्री चाँडै आउँदैछ...)</em></p>`;
+                        break;
+
+                    default:
+                        if (pageKey.startsWith("cat-")) { 
+                             const categoryId = pageKey.split("cat-")[1]; 
+                             contentHtml = await loadCategoryContent(categoryId, pageTitle);
+                        } else {
+                            contentHtml = `<h2>${pageTitle}</h2><p class="centered-intro">यो पृष्ठ ("${pageTitle}") को लागि सामग्री चाँडै आउँदैछ।</p>`;
+                        }
+                }
+            } catch (error) {
+                console.error("Error loading content for pageKey:", pageKey, error);
+                contentHtml = `<h2>त्रुटि</h2><p>सामग्री लोड गर्न सकिएन। कृपया पछि प्रयास गर्नुहोस्।</p>`;
+            }
+            
+            dynamicContent.innerHTML = contentHtml;
+            attachDynamicEventListeners(pageKey); 
+            window.scrollTo(0, 0); 
+        }
+
+        async function loadCategoryContent(categoryId, categoryName) {
+            console.log(`Attempting to load (placeholder) content for category: ${categoryName} (ID: ${categoryId})`);
+            let contentHtml = `<h2>${categoryName}</h2>`;
+            contentHtml += `<img src="https://placehold.co/600x250/55efc4/000000?text=${encodeURIComponent(categoryName)}" alt="${categoryName}" class="category-image" onerror="this.onerror=null;this.src='https://placehold.co/600x250/cccccc/333333?text=Image+Not+Found';">`;
+            
+            // Add specific placeholder text based on categoryName if needed, otherwise generic
+            if (categoryName === "नेपालको भूगोल") {
+                 contentHtml += `<p>यो खण्डमा नेपालको भौगोलिक स्थिति, हिमाल, पहाड, तराई, नदीनाला, ताल, जलवायु, र प्राकृतिक स्रोतहरूको बारेमा विस्तृत जानकारी समावेश गरिनेछ।</p>
+                               <h3>मुख्य विषयहरू:</h3>
+                               <ul>
+                                   <li>नेपालको धरातलीय स्वरूप</li>
+                                   <li>प्रमुख हिमाल श्रृंखलाहरू र चुचुराहरू</li>
+                                   <li>मुख्य नदी प्रणालीहरू र तालहरू</li>
+                               </ul>
+                               <h3>केही प्रश्नोत्तर:</h3>
+                               <div class="qa-pair"><strong>प्रश्न: नेपालको सबैभन्दा अग्लो हिमाल कुन हो?</strong><p>उत्तर: सगरमाथा (८८४८.८६ मिटर)।</p></div>
+                               <div class="qa-pair"><strong>प्रश्न: नेपाललाई कतिवटा भौगोलिक क्षेत्रमा विभाजन गरिएको छ?</strong><p>उत्तर: ३ (हिमाल, पहाड, तराई)।</p></div>`;
+            } else if (categoryName === "विज्ञान") {
+                 contentHtml += `<p>यस खण्डमा विज्ञानका आधारभूत सिद्धान्तहरू, प्रमुख आविष्कारहरू, प्राविधिक उन्नतिहरू, र भौतिकशास्त्र, रसायनशास्त्र, जीवविज्ञान, र खगोल विज्ञान जस्ता विभिन्न वैज्ञानिक क्षेत्रहरूबाट रोचक तथ्यहरू समावेश गरिनेछ।</p>
+                               <h3>मुख्य विषयहरू:</h3>
+                               <ul>
+                                   <li>भौतिकशास्त्रका आधारभूत नियमहरू</li>
+                                   <li>रासायनिक प्रतिक्रियाहरू र आवधिक तालिका</li>
+                                   <li>कोशिका विज्ञान, आनुवंशिकी, र विकास</li>
+                               </ul>
+                               <h3>केही प्रश्नोत्तर:</h3>
+                               <div class="qa-pair"><strong>प्रश्न: गुरुत्वाकर्षणको नियम कसले पत्ता लगाएका हुन्?</strong><p>उत्तर: सर आइज्याक न्यूटन।</p></div>
+                               <div class="qa-pair"><strong>प्रश्न: पानीको रासायनिक सूत्र के हो?</strong><p>उत्तर: H₂O.</p></div>`;
+            }
+            else {
+                contentHtml += `<p>यो "${categoryName}" श्रेणीको लागि विस्तृत विवरण र सामग्री चाँडै उपलब्ध हुनेछ।</p>`;
+            }
+            contentHtml += `<p><em>(डाटाबेस जडान नभएकोले, यो हाल एक नमुना सामग्री हो।)</em></p>`;
+            
+            contentHtml += `<h3>थप प्रश्नोत्तर (नमुना):</h3>
+                           <div class="qa-pair"><strong>प्रश्न: ${categoryName} को मुख्य विशेषता के हो?</strong><p>उत्तर: यसको मुख्य विशेषता [मुख्य विशेषता यहाँ लेख्नुहोस्] हो।</p></div>
+                           <div class="qa-pair"><strong>प्रश्न: ${categoryName} किन महत्वपूर्ण छ?</strong><p>उत्तर: [महत्व यहाँ व्याख्या गर्नुहोस्] भएकोले यो महत्वपूर्ण छ।</p></div>`;
+            return contentHtml;
+        }
+
+
+        // --- Back Button Functionality ---
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                if (contentHistory.length > 1) { 
+                    contentHistory.pop(); 
+                    const previousPage = contentHistory[contentHistory.length - 1]; 
+                    
+                    loadContent(previousPage.key, previousPage.title); 
+
+                    menuLinks.forEach(l => l.classList.remove('active'));
+                    const activeLink = document.querySelector(`.sidebar ul li a[data-menu="${previousPage.key}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+
+                } else if (contentHistory.length === 1 && contentHistory[0].key !== 'गृहपृष्ठ') {
+                    contentHistory.pop();
+                    loadContent('गृहपृष्ठ', 'गृहपृष्ठ');
+                    menuLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelector('.sidebar ul li a[data-menu="गृहपृष्ठ"]').classList.add('active');
+                }
+                const currentPageKey = getCurrentPageKey();
+                if (currentPageKey === 'गृहपृष्ठ' || currentPageKey === 'ज्ञान-श्रेणीहरू') {
+                    backButtonContainer.classList.remove('visible');
+                }
+            });
+        }
+
+        // --- Theme Switcher ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                if(document.getElementById('darkModeBtn')) document.getElementById('darkModeBtn').classList.add('active');
+                if(document.getElementById('lightModeBtn')) document.getElementById('lightModeBtn').classList.remove('active');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                if(document.getElementById('lightModeBtn')) document.getElementById('lightModeBtn').classList.add('active');
+                if(document.getElementById('darkModeBtn')) document.getElementById('darkModeBtn').classList.remove('active');
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+
+        // --- Event Listeners for Dynamically Loaded Content ---
+        function attachDynamicEventListeners(pageKey) {
+            if (pageKey === 'सेटिङ्ग्स') {
+                const lightModeBtn = document.getElementById('lightModeBtn');
+                const darkModeBtn = document.getElementById('darkModeBtn');
+                if (lightModeBtn) lightModeBtn.addEventListener('click', () => applyTheme('light'));
+                if (darkModeBtn) darkModeBtn.addEventListener('click', () => applyTheme('dark'));
+                if (document.body.classList.contains('dark-mode')) {
+                    if(darkModeBtn) darkModeBtn.classList.add('active');
+                } else {
+                    if(lightModeBtn) lightModeBtn.classList.add('active');
+                }
+            }
+
+            if (pageKey === 'Share') {
+                const copyLinkBtn = document.getElementById('copyLinkBtn');
+                const shareLinkInput = document.getElementById('shareLinkInput');
+                const copyFeedback = document.getElementById('copyFeedback');
+
+                if (copyLinkBtn && shareLinkInput && copyFeedback) {
+                    copyLinkBtn.addEventListener('click', () => {
+                        shareLinkInput.select();
+                        shareLinkInput.setSelectionRange(0, 99999); 
+                        try {
+                            document.execCommand('copy');
+                            copyFeedback.textContent = 'लिङ्क कपि भयो!';
+                            setTimeout(() => { copyFeedback.textContent = ''; }, 2000);
+                        } catch (err) {
+                            copyFeedback.textContent = 'कपि गर्न सकिएन।';
+                             console.error('Failed to copy: ', err);
+                        }
+                    });
+                }
+            }
+            
+            if (pageKey === 'Rate App!') {
+                const reviewForm = document.getElementById('reviewForm');
+                if (reviewForm) {
+                    reviewForm.addEventListener('submit', async function(event) {
+                        event.preventDefault();
+                        alert('प्रतिक्रिया सुविधा हाललाई Firebase जडान नभएकोले निष्क्रिय छ।');
+                    });
+                }
+            }
+            
+            if (pageKey === 'Contact') {
+                const contactForm = document.getElementById('contactForm');
+                if (contactForm) {
+                    contactForm.addEventListener('submit', async function(event) {
+                        event.preventDefault();
+                        alert('सन्देश पठाउने सुविधा हाललाई Firebase जडान नभएकोले निष्क्रिय छ।');
+                    });
+                }
+            }
+
+            const categoryButtons = document.querySelectorAll('.category-button');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const categoryId = this.dataset.categoryId; 
+                    const categoryNameFromDataAttr = this.dataset.categoryName || this.dataset.category; 
+                    const categoryNameFromText = this.textContent.trim(); 
+                    
+                    const finalCategoryName = categoryNameFromDataAttr || categoryNameFromText;
+                    const historyKey = categoryId ? `cat-${categoryId}` : finalCategoryName;
+
+
+                    contentHistory.push({ key: getCurrentPageKey(), title: headerTitle.textContent, html: dynamicContent.innerHTML });
+                    loadContent(historyKey, finalCategoryName); 
+                });
+            });
+        }
+
+
+        // --- Footer Year ---
+        const currentYearSpan = document.getElementById('currentYear');
+        if (currentYearSpan) {
+            currentYearSpan.textContent = new Date().getFullYear();
+        }
+
+        // --- Initial Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent('गृहपृष्ठ', 'गृहपृष्ठ'); 
+            handleResize(); 
+        });
+
+    </script>
+</body>
+</html>
