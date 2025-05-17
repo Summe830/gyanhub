@@ -970,7 +970,30 @@
                                     <button class="category-button" data-category="साहित्य र संस्कृति">साहित्य र संस्कृति</button>
                                     <button class="category-button" data-category="सामान्य ज्ञान">सामान्य ज्ञान</button>
                                 </div>
-                            </div>`;
+                            </div>`;   
+                        break;     
+                        contentHtml = `<h2>ज्ञान श्रेणीहरू</h2><p class="centered-intro">आफ्नो रुचिको श्रेणी छान्नुहोस्:</p>`;
+                        const staticCategories = [
+                            { id: "nepal-bhugol", name: "नेपालको भूगोल" },
+                            { id: "nepal-itihas", name: "नेपालको इतिहास" },
+                            { id: "vishwa-itihas", name: "विश्व इतिहास" },
+                            { id: "vishwa-bhugol", name: "विश्व भूगोल" },
+                            { id: "khelkud", name: "खेलकुद" },
+                            { id: "vigyan", name: "विज्ञान" },
+                            { id: "sahitya-sanskriti", name: "साहित्य र संस्कृति" },
+                            { id: "सामान्य ज्ञान", name: "सामान्य ज्ञान" }
+                        ];
+                        if (staticCategories.length > 0) {
+                            contentHtml += `<div class="category-list">`;
+                            staticCategories.forEach(cat => {
+                                contentHtml += `<button class="category-button" data-category="${cat.name}" data-category-id="${cat.id}">${cat.name}</button>`;
+                            });
+                            contentHtml += `</div>`;
+                        } else {
+                             contentHtml += `<p>अहिले कुनै श्रेणीहरू उपलब्ध छैनन्।</p>`;
+                        }
+                        contentHtml += `<p style="text-align:center; margin-top:20px; font-style:italic; color:var(--paragraph-color);">(नोट: श्रेणीहरू हाल स्थिर रूपमा देखाइएका छन्। डाटाबेस जडान भएपछि यी गतिशील हुनेछन्।)</p>`;
+                        break;
                     case 'सूचनाहरू':
                         contentHtml = `<h2>सूचनाहरू</h2><p class="centered-intro">अहिले कुनै नयाँ सूचनाहरू छैनन्।</p>`;
                         break;
